@@ -1,8 +1,7 @@
 const DOMSelectors = {
   container: document.querySelector(".container"),
-
-  learnMore: document.getElementById("learn-more"),
-  modal: document.getElementById("more-info"),
+  side1: document.querySelector("#side1"),
+  side2: document.querySelector("#side2"),
 };
 
 export { DOMSelectors };
