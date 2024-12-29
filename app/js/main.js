@@ -12,13 +12,14 @@ async function fetchImages(count = 5) {
       throw new Error(response);
     } else {
       const data = await response.json();
+      console.log(data);
+      photoPool.push(...data); // pushes api data into array. use w/ shift and maybe to display card info by using an index (at the end?)
       return data;
     }
   } catch (error) {
     console.log(error);
     console.log("sorry coudlnt fid that");
   }
-  photoPool.push(...data); // pushes api data into array. use w/ shift and maybe to display card info by using an index (at the end?)
 }
 
 function startGame() {
@@ -29,13 +30,13 @@ function startGame() {
 }
 
 function displayPhotos(leftPhoto, rightPhoto) {
-  document.querySelector("#side1").innerHTML = `
+  DOMSelectors.container.querySelector("#side1").innerHTML = `
     <h2>${leftPhoto.title}</h2>
     <img src="${item.hdurl}" alt="${item.title}
     <p>Was APOD on: ${leftPhoto.date}</p>
   `;
 
-  document.querySelector("#side2").innerHTML = `
+  DOMSelectors.container.querySelector("#side2").innerHTML = `
     <h2>${rightPhoto.title}</h2>
     <img src="${item.hdurl}" alt="${item.title}
     <button class="btn" id="more-recent">More Recent</button>
