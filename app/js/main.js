@@ -1,6 +1,7 @@
 import { DOMSelectors } from "./dom.js";
 
 let photoPool = [];
+let score = 0;
 
 // This code was made freely available by the NASA APOD (Astronomy Photo of the Day) API.
 async function fetchImages(count = 5) {
@@ -49,14 +50,19 @@ function displayPhotos(leftPhoto, rightPhoto) {
     `<h2 class="text-3xl">${rightPhoto.title}</h2>
     <img src="${rightPhoto.hdurl}" alt="${rightPhoto.title}">
     <p>Was featured</p>
-    <button id="more-recent" class="btn btn-neutral box-border drop-shadow-sm w-20 bg-violet-700 text-white p-2 m-2 rounded">More Recently!</button>
-    <button id="less-recent" class="btn btn-neutral box-border drop-shadow-2xl w-20 bg-fuchsia-800 text-white p-2 m-2 rounded">Less Recently!</button>
+    <button id="more-recent" class="btn btn-primary">More Recently!</button>
+    <button id="less-recent" class="btn box-border drop-shadow-2xl w-20 bg-fuchsia-800 text-white p-2 m-2 rounded">Less Recently!</button>
     <h4 class="text-xl">than ${leftPhoto.title}</h4>`
   );
-  // make sure to set up the buttons function and put here
+  document.querySelector("#more-recent").onclick = () => {
+    guess(rightPhoto, leftPhoto, "More Recent");
+  };
+  document.querySelector("#less-recent").onclick = () => {
+    guess(rightPhoto, leftPhoto, "Less Recent");
+  };
 }
 
-function guessing(leftPhoto, rightPhoto, choice) {
+function guess(leftPhoto, rightPhoto, choice) {
   const leftImageDate = new Date(leftPhoto.date);
   const rightImageDate = new Date(rightPhoto.date);
 
@@ -64,7 +70,22 @@ function guessing(leftPhoto, rightPhoto, choice) {
     (choice === "More Recent" && rightImageDate > leftImageDate) ||
     (choice === "Less Recent" && leftImageDate > rightImageDate);
 
-  while (correct) {}
+  while (choice === correct) {
+    score += 1;
+    continueGame(rightImage);
+    if (score >= highscore) {
+      // replace the highscore with your current score
+      console.log(score);
+    }
+  }
+}
+
+function continueGame(newLeftPhoto) {
+  if (photoPool.length < 3) {
+    fetchImages();
+  }
+  const newRightPhoto = photoPool.shift();
+  displayPhotos(newLeftPhoto, newRightPhoto);
 }
 
 startGame();
