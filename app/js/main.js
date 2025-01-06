@@ -26,14 +26,16 @@ async function fetchImages(count = 5) {
 }
 
 async function startGame() {
-  await fetchImages();
-  const leftPhoto = photoPool.shift();
-  const rightPhoto = photoPool.shift();
-
+  let photoPool = await fetchImages();
+  let leftPhoto = photoPool.shift();
+  console.log(leftPhoto);
+  let rightPhoto = photoPool.shift();
+  console.log(rightPhoto);
   displayPhotos(leftPhoto, rightPhoto);
 }
 
 function displayPhotos(leftPhoto, rightPhoto) {
+  console.log(leftPhoto, rightPhoto);
   DOMSelectors.side1.innerHTML = "";
   DOMSelectors.side2.innerHTML = "";
 
@@ -55,40 +57,48 @@ function displayPhotos(leftPhoto, rightPhoto) {
     <h4 class="text-xl">than ${leftPhoto.title}</h4>`
   );
 
-  DOMSelectors.moreRecent.addEventListener(
-    "click",
-    guess(rightPhoto, leftPhoto, "More Recent")
-  );
-  DOMSelectors.lessRecent.addEventListener(
-    "click",
-    guess(rightPhoto, leftPhoto, "More Recent")
-  );
+  document.querySelector("#more-recent").addEventListener("click", () => {
+    guess(rightPhoto, leftPhoto, "More Recent");
+  });
+  document.querySelector("#less-recent").addEventListener("click", () => {
+    guess(rightPhoto, leftPhoto, "Less Recent");
+  });
 }
 
 function guess(leftPhoto, rightPhoto, choice) {
   const leftImageDate = new Date(leftPhoto.date);
   const rightImageDate = new Date(rightPhoto.date);
+  console.log(leftImageDate);
+  console.log(rightImageDate);
 
   const correct =
-    (choice === "More Recent" && rightImageDate > leftImageDate) ||
-    (choice === "Less Recent" && leftImageDate > rightImageDate);
+    (choice === "More Recent" && rightImageDate - leftImageDate < 0) ||
+    (choice === "Less Recent" && leftImageDate - rightImageDate < 0);
 
-  while (choice === correct) {
+  console.log(correct);
+
+  if ((choice = correct)) {
     score += 1;
-    continueGame(rightImage);
+    console.log("Correct");
+    continueGame(leftPhoto, rightPhoto);
     if (score >= highscore) {
       // replace the highscore with your current score
       console.log(score);
     }
+  } else {
+    console.log("Nope");
   }
 }
 
-function continueGame(newLeftPhoto) {
+function continueGame(leftPhoto, rightPhoto) {
   if (photoPool.length < 3) {
     fetchImages();
   }
-  const newRightPhoto = photoPool.shift();
-  displayPhotos(newLeftPhoto, newRightPhoto);
+  console.log(photoPool);
+  leftPhoto = rightPhoto;
+  rightPhoto = photoPool.shift();
+  console.log(photoPool);
+  displayPhotos(leftPhoto, rightPhoto);
 }
 
-startGame();
+await startGame();
