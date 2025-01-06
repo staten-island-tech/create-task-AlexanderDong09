@@ -50,16 +50,19 @@ function displayPhotos(leftPhoto, rightPhoto) {
     `<h2 class="text-3xl">${rightPhoto.title}</h2>
     <img src="${rightPhoto.hdurl}" alt="${rightPhoto.title}">
     <p>Was featured</p>
-    <button id="more-recent" class="btn btn-primary">More Recently!</button>
-    <button id="less-recent" class="btn box-border drop-shadow-2xl w-20 bg-fuchsia-800 text-white p-2 m-2 rounded">Less Recently!</button>
+    <button id="more-recent" class="btn btn-secondary ">More Recently!</button>
+    <button id="less-recent" class="btn btn-accent bg-fuchsia-800 p-2 m-2 rounded">Less Recently!</button>
     <h4 class="text-xl">than ${leftPhoto.title}</h4>`
   );
-  document.querySelector("#more-recent").onclick = () => {
-    guess(rightPhoto, leftPhoto, "More Recent");
-  };
-  document.querySelector("#less-recent").onclick = () => {
-    guess(rightPhoto, leftPhoto, "Less Recent");
-  };
+
+  DOMSelectors.moreRecent.addEventListener(
+    "click",
+    guess(rightPhoto, leftPhoto, "More Recent")
+  );
+  DOMSelectors.lessRecent.addEventListener(
+    "click",
+    guess(rightPhoto, leftPhoto, "More Recent")
+  );
 }
 
 function guess(leftPhoto, rightPhoto, choice) {

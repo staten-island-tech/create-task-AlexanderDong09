@@ -3,7 +3,7 @@ const DOMSelectors = {
   side1: document.querySelector("#side1"),
   side2: document.querySelector("#side2"),
   moreRecent: document.querySelector("#more-recent"),
-  lessRecent: document.querySelector("#less-rcent"),
+  lessRecent: document.querySelector("#less-recent"),
 };
 
 export { DOMSelectors };
