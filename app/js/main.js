@@ -28,14 +28,12 @@ async function fetchImages(count = 5) {
 async function startGame() {
   let photoPool = await fetchImages();
   let leftPhoto = photoPool.shift();
-  console.log(leftPhoto);
   let rightPhoto = photoPool.shift();
-  console.log(rightPhoto);
   displayPhotos(leftPhoto, rightPhoto);
 }
 
 function displayPhotos(leftPhoto, rightPhoto) {
-  console.log(leftPhoto, rightPhoto);
+  // console.log(leftPhoto, rightPhoto);
   DOMSelectors.side1.innerHTML = "";
   DOMSelectors.side2.innerHTML = "";
 
@@ -75,30 +73,26 @@ function guess(leftPhoto, rightPhoto, choice) {
     (choice === "More Recent" && rightImageDate - leftImageDate < 0) ||
     (choice === "Less Recent" && leftImageDate - rightImageDate < 0);
 
-  console.log(correct);
-
-  if ((choice = correct)) {
+  if (correct) {
     score += 1;
     console.log("Correct");
-    continueGame(leftPhoto, rightPhoto);
-    if (score >= highscore) {
-      // replace the highscore with your current score
-      console.log(score);
-    }
+    continueGame(leftPhoto);
+    console.log(score);
+    // if (score >= highscore) {
+    //   // replace the highscore with your current score
+    //   console.log(score);
+    // }
   } else {
     console.log("Nope");
   }
 }
 
-function continueGame(leftPhoto, rightPhoto) {
+function continueGame(newLeftPhoto) {
   if (photoPool.length < 3) {
     fetchImages();
   }
-  console.log(photoPool);
-  leftPhoto = rightPhoto;
-  rightPhoto = photoPool.shift();
-  console.log(photoPool);
-  displayPhotos(leftPhoto, rightPhoto);
+  let newRightPhoto = photoPool.shift();
+  displayPhotos(newLeftPhoto, newRightPhoto);
 }
 
 await startGame();
