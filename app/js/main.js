@@ -31,6 +31,10 @@ async function startGame() {
   let leftPhoto = photoPool.shift();
   let rightPhoto = photoPool.shift();
   displayPhotos(leftPhoto, rightPhoto);
+  DOMSelectors.scoreDisplay.insertAdjacentHTML(
+    "afterbegin",
+    `<h2>Score: 0</h2>`
+  );
 }
 
 function displayPhotos(leftPhoto, rightPhoto) {
@@ -85,16 +89,42 @@ function guess(leftPhoto, rightPhoto, choice) {
     //   console.log(score);
     // }
   } else {
+    lose();
     console.log("Nope");
   }
 }
 
 function updScore() {
   score++;
+  DOMSelectors.scoreDisplay.innerHTML = "";
   DOMSelectors.scoreDisplay.insertAdjacentHTML(
     "afterbegin",
     `<h2>Score: ${score}</h2>`
   );
+}
+
+function lose() {
+  const modal = document.createElement("div");
+  modal.className =
+    "fixed inset-0 bg-green bg-opacity-25 flex justify-center items-center z-50 opacity-0";
+
+  modal.innerHTML = ` 
+  <div class="bg-black w-[95%] md:w-[75%] h-[80%]  overflow-auto rounded-lg shadow-lg p-2 relative border-[3px] border-green">
+  <button class="btn btn-square btn-outline btn-sm md:btn-md absolute top-2 right-2 md:top-3 md:right-3" id="close-modal">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  </button>
+  <h2>Your Score: ${score}</h2> 
+  </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  const closeModal = document.getElementById("close-modal");
+  closeModal.addEventListener("click", function () {
+    modal.remove();
+  });
 }
 
 function continueGame(newLeftPhoto) {

@@ -5,6 +5,7 @@ const DOMSelectors = {
   moreRecent: document.querySelector("#more-recent"),
   lessRecent: document.querySelector("#less-recent"),
   scoreDisplay: document.querySelector("#scoreDisplay"),
+  losingModal: document.querySelector("lose"),
 };
 
 export { DOMSelectors };
