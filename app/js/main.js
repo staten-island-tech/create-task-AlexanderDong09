@@ -2,6 +2,7 @@ import { DOMSelectors } from "./dom.js";
 
 let photoPool = [];
 let score = 0;
+let highscore = 0;
 
 // This code was made freely available by the NASA APOD (Astronomy Photo of the Day) API.
 async function fetchImages(count = 5) {
@@ -26,7 +27,7 @@ async function fetchImages(count = 5) {
 }
 
 async function startGame() {
-  let photoPool = await fetchImages();
+  photoPool = await fetchImages();
   let leftPhoto = photoPool.shift();
   let rightPhoto = photoPool.shift();
   displayPhotos(leftPhoto, rightPhoto);
@@ -41,43 +42,44 @@ function displayPhotos(leftPhoto, rightPhoto) {
     "beforeend",
     `
   <h2>${leftPhoto.title}</h2>
-  <img src="${leftPhoto.hdurl}" alt="${leftPhoto.title}">
+  <img class="size-2/3"  src="${leftPhoto.hdurl}" alt="${leftPhoto.title}">
   <h4>Was APOD on:</h4>
   <h2>${leftPhoto.date}</h2>`
   );
+
   DOMSelectors.side2.insertAdjacentHTML(
     "beforeend",
-    `<h2 class="text-3xl">${rightPhoto.title}</h2>
-    <img src="${rightPhoto.hdurl}" alt="${rightPhoto.title}">
+    `<h2 class="">${rightPhoto.title}</h2>
+    <img class="size-2/3" src="${rightPhoto.hdurl}" alt="${rightPhoto.title}">
     <p>Was featured</p>
     <button id="more-recent" class="btn btn-secondary ">More Recently!</button>
     <button id="less-recent" class="btn btn-accent bg-fuchsia-800 p-2 m-2 rounded">Less Recently!</button>
-    <h4 class="text-xl">than ${leftPhoto.title}</h4>`
+    <h4 class="">than ${leftPhoto.title}</h4>`
   );
 
-  document.querySelector("#more-recent").addEventListener("click", () => {
+  document.querySelector("#more-recent").onclick = () => {
     guess(rightPhoto, leftPhoto, "More Recent");
-  });
-  document.querySelector("#less-recent").addEventListener("click", () => {
+  };
+  document.querySelector("#less-recent").onclick = () => {
     guess(rightPhoto, leftPhoto, "Less Recent");
-  });
+  };
 }
 
 function guess(leftPhoto, rightPhoto, choice) {
   const leftImageDate = new Date(leftPhoto.date);
   const rightImageDate = new Date(rightPhoto.date);
-  console.log(leftImageDate);
-  console.log(rightImageDate);
+  console.log("this is the left image's date: " + leftImageDate);
+  console.log("this is the rugt image's date: " + rightImageDate);
 
   const correct =
-    (choice === "More Recent" && rightImageDate - leftImageDate < 0) ||
-    (choice === "Less Recent" && leftImageDate - rightImageDate < 0);
+    (choice === "More Recent" && rightImageDate < leftImageDate) ||
+    (choice === "Less Recent" && rightImageDate > leftImageDate);
 
   if (correct) {
-    score += 1;
+    updScore();
     console.log("Correct");
     continueGame(leftPhoto);
-    console.log(score);
+    console.log("your score is: " + score);
     // if (score >= highscore) {
     //   // replace the highscore with your current score
     //   console.log(score);
@@ -85,6 +87,14 @@ function guess(leftPhoto, rightPhoto, choice) {
   } else {
     console.log("Nope");
   }
+}
+
+function updScore() {
+  score++;
+  DOMSelectors.scoreDisplay.insertAdjacentHTML(
+    "afterbegin",
+    `<h2>Score: ${score}</h2>`
+  );
 }
 
 function continueGame(newLeftPhoto) {
@@ -95,4 +105,4 @@ function continueGame(newLeftPhoto) {
   displayPhotos(newLeftPhoto, newRightPhoto);
 }
 
-await startGame();
+startGame();
