@@ -2,7 +2,6 @@ import { DOMSelectors } from "./dom.js";
 
 let photoPool = [];
 let score = 0;
-let highscore = 0;
 
 // This code was made freely available by the NASA APOD (Astronomy Photo of the Day) API.
 async function fetchImages(count = 5) {
@@ -27,6 +26,8 @@ async function fetchImages(count = 5) {
 }
 
 async function startGame() {
+  score = 0;
+  document.querySelector("#scoreDisplay").innerHTML = "";
   photoPool = await fetchImages();
   let leftPhoto = photoPool.shift();
   let rightPhoto = photoPool.shift();
@@ -89,7 +90,7 @@ function guess(leftPhoto, rightPhoto, choice) {
     //   console.log(score);
     // }
   } else {
-    lose();
+    lose(score);
     console.log("Nope");
   }
 }
@@ -103,28 +104,29 @@ function updScore() {
   );
 }
 
-function lose() {
+function lose(score) {
   const modal = document.createElement("div");
   modal.className =
-    "fixed inset-0 bg-green bg-opacity-25 flex justify-center items-center z-50 opacity-0";
+    "fixed inset-0 bg-green bg-opacity-25 flex justify-center items-center z-50";
+  modal.style.backgroundImage = "url('background.png')";
+  modal.style.backgroundSize = "cover";
 
   modal.innerHTML = ` 
-  <div class="bg-black w-[95%] md:w-[75%] h-[80%]  overflow-auto rounded-lg shadow-lg p-2 relative border-[3px] border-green">
-  <button class="btn btn-square btn-outline btn-sm md:btn-md absolute top-2 right-2 md:top-3 md:right-3" id="close-modal">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-    </svg>
-  </button>
-  <h2>Your Score: ${score}</h2> 
+  <div class= "w-full h-full flex flex-col justify-center items-center overflow-auto rounded-lg shadow-lg">
+  <h1 class="text-white text-5xl mb-6">you lost :(</h1>
+  <h2 class="text-white text-2xl md:text-4xl">Your Score: ${score}</h2>
+  <button class="btn btn-primary mt-4" id="play-again">Play Again</button>
   </div>
   `;
 
   document.body.appendChild(modal);
 
-  const closeModal = document.getElementById("close-modal");
-  closeModal.addEventListener("click", function () {
+  const playAgain = document.getElementById("play-again");
+  playAgain.addEventListener("click", function () {
     modal.remove();
   });
+
+  startGame();
 }
 
 function continueGame(newLeftPhoto) {
