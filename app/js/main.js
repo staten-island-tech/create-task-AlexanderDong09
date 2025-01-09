@@ -2,6 +2,8 @@ import { DOMSelectors } from "./dom.js";
 
 let photoPool = [];
 let score = 0;
+let attempts = 0;
+const maxAttempts = 3;
 
 // This code was made freely available by the NASA APOD (Astronomy Photo of the Day) API.
 async function fetchImages(count = 5) {
@@ -25,8 +27,9 @@ async function fetchImages(count = 5) {
   }
 }
 
-async function startGame() {
+async function startEndlessGame() {
   score = 0;
+  attempts = 0;
   document.querySelector("#scoreDisplay").innerHTML = "";
   photoPool = await fetchImages();
   let leftPhoto = photoPool.shift();
@@ -80,18 +83,25 @@ function guess(leftPhoto, rightPhoto, choice) {
     (choice === "More Recent" && rightImageDate < leftImageDate) ||
     (choice === "Less Recent" && rightImageDate > leftImageDate);
 
-  if (correct) {
-    updScore();
-    console.log("Correct");
-    continueGame(leftPhoto);
-    console.log("your score is: " + score);
-    // if (score >= highscore) {
-    //   // replace the highscore with your current score
-    //   console.log(score);
-    // }
-  } else {
-    lose(score);
-    console.log("Nope");
+  while (attempts < maxAttempts) {
+    if (correct) {
+      updScore();
+      console.log("Correct");
+      continueGame(leftPhoto);
+      console.log("your score is: " + score);
+      break;
+      // if (score >= highscore) {
+      //   // replace the highscore with your current score
+      //   console.log(score);
+      // }
+    } else {
+      attempts++;
+      alert(`wrong! You have ${maxAttempts - attempts} attempt(s) remaining`);
+      if (attempts >= maxAttempts) {
+        lose(score);
+        break;
+      }
+    }
   }
 }
 
@@ -113,7 +123,7 @@ function lose(score) {
 
   modal.innerHTML = ` 
   <div class= "w-full h-full flex flex-col justify-center items-center overflow-auto rounded-lg shadow-lg">
-  <h1 class="text-white text-5xl mb-6">you lost :(</h1>
+  <h1 class="text-white text-5xl mb-6">you chose incorrectly and lost :(</h1>
   <h2 class="text-white text-2xl md:text-4xl">Your Score: ${score}</h2>
   <button class="btn btn-primary mt-4" id="play-again">Play Again</button>
   </div>
@@ -126,7 +136,7 @@ function lose(score) {
     modal.remove();
   });
 
-  startGame();
+  startEndlessGame();
 }
 
 function continueGame(newLeftPhoto) {
@@ -137,4 +147,4 @@ function continueGame(newLeftPhoto) {
   displayPhotos(newLeftPhoto, newRightPhoto);
 }
 
-startGame();
+startEndlessGame();
