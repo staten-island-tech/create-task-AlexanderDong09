@@ -107,7 +107,11 @@ function guess(leftPhoto, rightPhoto, choice) {
           `Incorrect, sorry! You have ONE attempt remaining! Make it count!`
         );
       } else {
-        alert("game over :(");
+        // maybe make 2 seperate alerts
+        alert(
+          `game over :(
+          ${leftPhoto.title} was featured on ${leftImageDate}`
+        );
       }
 
       break;
