@@ -76,8 +76,8 @@ function displayPhotos(leftPhoto, rightPhoto) {
 function guess(leftPhoto, rightPhoto, choice) {
   const leftImageDate = new Date(leftPhoto.date);
   const rightImageDate = new Date(rightPhoto.date);
-  console.log("this is the left image's date: " + leftImageDate);
-  console.log("this is the rugt image's date: " + rightImageDate);
+  // console.log("this is the left image's date: " + leftImageDate);
+  // console.log("this is the rugt image's date: " + rightImageDate);
 
   const correct =
     (choice === "More Recent" && rightImageDate < leftImageDate) ||
@@ -85,39 +85,43 @@ function guess(leftPhoto, rightPhoto, choice) {
 
   while (attempts < maxAttempts) {
     if (correct) {
-      updScore();
-      console.log("Correct");
+      score++;
+      DOMSelectors.scoreDisplay.innerHTML = "";
+      DOMSelectors.scoreDisplay.insertAdjacentHTML(
+        "afterbegin",
+        `<h2 class="text-black text-3xl">Score: ${score}</h2>`
+      );
       continueGame(leftPhoto);
       console.log("your score is: " + score);
       break;
-      // if (score >= highscore) {
-      //   // replace the highscore with your current score
-      //   console.log(score);
-      // }
     } else {
       attempts++;
-      alert(`wrong! You have ${maxAttempts - attempts} attempt(s) remaining`);
-      if (attempts >= maxAttempts) {
-        lose(score);
-        break;
+      if (attempts === 1) {
+        alert(
+          `Incorrect, sorry! You have ${
+            maxAttempts - attempts
+          } attempts remaining`
+        );
+      } else if (attempts === 2) {
+        alert(
+          `Incorrect, sorry! You have ONE attempt remaining! Make it count!`
+        );
+      } else {
+        alert("game over :(");
       }
+
+      break;
     }
   }
-}
-
-function updScore() {
-  score++;
-  DOMSelectors.scoreDisplay.innerHTML = "";
-  DOMSelectors.scoreDisplay.insertAdjacentHTML(
-    "afterbegin",
-    `<h2>Score: ${score}</h2>`
-  );
+  if (attempts >= maxAttempts) {
+    lose(score);
+  }
 }
 
 function lose(score) {
   const modal = document.createElement("div");
   modal.className =
-    "fixed inset-0 bg-green bg-opacity-25 flex justify-center items-center z-50";
+    "bg-black fixed inset-0 bg-green bg-opacity-25 flex justify-center items-center z-50";
   modal.style.backgroundImage = "url('background.png')";
   modal.style.backgroundSize = "cover";
 
