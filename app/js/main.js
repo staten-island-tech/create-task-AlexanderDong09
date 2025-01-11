@@ -14,10 +14,9 @@ async function fetchImages(count = 5) {
       throw new Error(response);
     } else {
       const data = await response.json();
-      console.log(data);
-
       const filteredData = data.filter((item) => item.media_type != "video");
       photoPool.push(...filteredData);
+      console.log(photoPool);
       return filteredData;
     }
   } catch (error) {
@@ -46,10 +45,11 @@ function displayPhotos(leftPhoto, rightPhoto) {
   DOMSelectors.side1.insertAdjacentHTML(
     "beforeend",
     `
-  <h2>${leftPhoto.title}</h2>
-  <img class="size-2/3"  src="${leftPhoto.hdurl}" alt="${leftPhoto.title}">
-  <h4>Was APOD on:</h4>
-  <h2>${leftPhoto.date}</h2>`
+    <h2>${leftPhoto.title}</h2>
+    <img class="size-2/3"  src="${leftPhoto.hdurl}" alt="${leftPhoto.title}">
+    <h4>Was APOD on:</h4>
+    <h2>${leftPhoto.date}</h2>
+    `
   );
 
   DOMSelectors.side2.insertAdjacentHTML(
@@ -69,6 +69,7 @@ function displayPhotos(leftPhoto, rightPhoto) {
     guess(rightPhoto, leftPhoto, "Less Recent");
   };
 }
+
 function updateGameInfo() {
   DOMSelectors.scoreDisplay.innerHTML = "";
   DOMSelectors.scoreDisplay.insertAdjacentHTML(
@@ -79,6 +80,7 @@ function updateGameInfo() {
     maxAttempts - attempts
   }`;
 }
+
 async function guess(leftPhoto, rightPhoto, choice) {
   const leftImageDate = new Date(leftPhoto.date);
   const rightImageDate = new Date(rightPhoto.date);
