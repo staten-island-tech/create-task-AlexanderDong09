@@ -5,7 +5,6 @@ let score = 0;
 let attempts = 0;
 const maxAttempts = 3;
 
-// This code was made freely available by the NASA APOD (Astronomy Photo of the Day) API.
 async function fetchImages(count = 5) {
   try {
     const response = await fetch(
@@ -18,31 +17,29 @@ async function fetchImages(count = 5) {
       console.log(data);
 
       const filteredData = data.filter((item) => item.media_type != "video");
-      photoPool.push(...filteredData); // pushes api data into array. use w/ shift and maybe to display card info by using an index (at the end?)
+      photoPool.push(...filteredData);
       return filteredData;
     }
   } catch (error) {
     console.log(error);
-    console.log("sorry coudlnt fid that");
+    alert("An error occured! Try refreshing the page.");
   }
 }
 
 async function startEndlessGame() {
   score = 0;
   attempts = 0;
-  document.querySelector("#scoreDisplay").innerHTML = "";
+  document.querySelector("#scoreDisplay").innerHTML = "Score: 0";
+  document.querySelector(
+    "#attemptDisplay"
+  ).innerHTML = `Attempts Remaining: ${maxAttempts}`;
   photoPool = await fetchImages();
   let leftPhoto = photoPool.shift();
   let rightPhoto = photoPool.shift();
   displayPhotos(leftPhoto, rightPhoto);
-  DOMSelectors.scoreDisplay.insertAdjacentHTML(
-    "afterbegin",
-    `<h2>Score: 0</h2>`
-  );
 }
 
 function displayPhotos(leftPhoto, rightPhoto) {
-  // console.log(leftPhoto, rightPhoto);
   DOMSelectors.side1.innerHTML = "";
   DOMSelectors.side2.innerHTML = "";
 
@@ -61,7 +58,7 @@ function displayPhotos(leftPhoto, rightPhoto) {
     <img class="size-2/3" src="${rightPhoto.hdurl}" alt="${rightPhoto.title}">
     <p>Was featured</p>
     <button id="more-recent" class="btn btn-secondary ">More Recently!</button>
-    <button id="less-recent" class="btn btn-accent bg-fuchsia-800 p-2 m-2 rounded">Less Recently!</button>
+    <button id="less-recent" class="btn btn-accent bg-fuchsia-800 p-2 m-2 ">Less Recently!</button>
     <h4 class="">than ${leftPhoto.title}</h4>`
   );
 
@@ -72,13 +69,19 @@ function displayPhotos(leftPhoto, rightPhoto) {
     guess(rightPhoto, leftPhoto, "Less Recent");
   };
 }
-
-function guess(leftPhoto, rightPhoto, choice) {
+function updateGameInfo() {
+  DOMSelectors.scoreDisplay.innerHTML = "";
+  DOMSelectors.scoreDisplay.insertAdjacentHTML(
+    "afterbegin",
+    `<h2 class="text-black text-3xl">Score: ${score}</h2>`
+  );
+  document.querySelector("#attemptDisplay").innerHTML = `Attempts Remaining: ${
+    maxAttempts - attempts
+  }`;
+}
+async function guess(leftPhoto, rightPhoto, choice) {
   const leftImageDate = new Date(leftPhoto.date);
   const rightImageDate = new Date(rightPhoto.date);
-  // console.log("this is the left image's date: " + leftImageDate);
-  // console.log("this is the rugt image's date: " + rightImageDate);
-
   const correct =
     (choice === "More Recent" && rightImageDate < leftImageDate) ||
     (choice === "Less Recent" && rightImageDate > leftImageDate);
@@ -86,34 +89,36 @@ function guess(leftPhoto, rightPhoto, choice) {
   while (attempts < maxAttempts) {
     if (correct) {
       score++;
-      DOMSelectors.scoreDisplay.innerHTML = "";
-      DOMSelectors.scoreDisplay.insertAdjacentHTML(
-        "afterbegin",
-        `<h2 class="text-black text-3xl">Score: ${score}</h2>`
-      );
+      updateGameInfo();
       continueGame(leftPhoto);
-      console.log("your score is: " + score);
       break;
     } else {
       attempts++;
-      if (attempts === 1) {
+      updateGameInfo();
+      if (maxAttempts - 1 > attempts) {
         alert(
           `Incorrect, sorry! You have ${
             maxAttempts - attempts
           } attempts remaining`
         );
-      } else if (attempts === 2) {
-        alert(
-          `Incorrect, sorry! You have ONE attempt remaining! Make it count!`
-        );
+      } else if (attempts === maxAttempts - 1) {
+        alert(`Incorrect, sorry! You have ONE attempt remaining!`);
       } else {
-        // maybe make 2 seperate alerts
-        alert(
-          `game over :(
-          ${leftPhoto.title} was featured on ${leftImageDate}`
-        );
+        document.querySelector(
+          "#attemptDisplay"
+        ).innerHTML = `Attempts Remaining: ZERO`;
+        if (leftImageDate > rightImageDate) {
+          alert(
+            `Game Over!
+            ${leftPhoto.title} was featured on ${leftPhoto.date}, which was MORE recent than ${rightPhoto.title}`
+          );
+        } else {
+          alert(
+            `Game Over!
+            ${leftPhoto.title} was featured on ${leftPhoto.date}, which was LESS recent than ${rightPhoto.title}`
+          );
+        }
       }
-
       break;
     }
   }
@@ -156,3 +161,7 @@ function continueGame(newLeftPhoto) {
 }
 
 startEndlessGame();
+
+// This code uses the NASA APOD (Astronomy Picture of the Day) API
+// API URL: https://api.nasa.gov/planetary/apod
+// This code was made freely available by NASA: https://api.nasa.gov/
