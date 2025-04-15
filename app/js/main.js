@@ -81,7 +81,7 @@ function updateGameInfo() {
   }`;
 }
 
-async function guess(leftPhoto, rightPhoto, choice) {
+function guess(leftPhoto, rightPhoto, choice) {
   const leftImageDate = new Date(leftPhoto.date);
   const rightImageDate = new Date(rightPhoto.date);
   const correct =
